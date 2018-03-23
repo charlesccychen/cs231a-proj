@@ -1,0 +1,132 @@
+<script src = "https://cdnjs.cloudflare.com/ajax/libs/three.js/90/three.js"></script>
+<script src = "OrbitControls.js"></script>
+<script src = "stats.min.js"></script>
+<script src = "cake_dense_structure.json"></script>
+<body>
+<script>
+var container = document.createElement('div');
+document.body.appendChild(container)
+
+var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 3000);
+camera.position.z = 1000;
+
+scene = new THREE.Scene();
+scene.fog = new THREE.FogExp2( 0x000000, 0.00007 );
+
+geometry = new THREE.Geometry();
+
+				// for ( i = 0; i < 20000; i ++ ) {
+
+				// 	var vertex = new THREE.Vector3();
+				// 	vertex.x = Math.random() * 2000 - 1000;
+				// 	vertex.y = Math.random() * 1100 - 1000;
+				// 	vertex.z = Math.random() * 2000 - 1000;
+
+				// 	geometry.vertices.push( vertex );
+
+				// }
+				for ( i = 0; i < dense_structure.points.length; i ++ ) {
+
+					var vertex = new THREE.Vector3();
+					var SCALE = 100;
+					vertex.x = dense_structure.points[i][0]*SCALE;
+					vertex.y = dense_structure.points[i][1]*SCALE;
+					vertex.z = dense_structure.points[i][2]*SCALE;
+
+					geometry.vertices.push( vertex );
+
+				}
+				var parameters = [
+					[ [1, 0, 0.9], 0.1 ],
+					[ [0.95, 1, 0.5], 4 ],
+					[ [0.90, 1, 0.5], 3 ],
+					[ [0.85, 1, 0.5], 2 ],
+					[ [0.80, 1, 0.5], 1 ]
+				];
+
+var materials = []
+				for ( i = 0; i < 1; i ++ ) {
+
+					color = parameters[i][0];
+					size  = parameters[i][1];
+
+					materials[i] = new THREE.PointsMaterial( { size: 3, alphaTest: 0.5, transparent: true } );
+				// materials[i].color.setHSL( 0.0, 1.0, 110.7 );
+					particles = new THREE.Points( geometry, materials[i] );
+
+					particles.rotation.x = 0;
+					particles.rotation.y = 0;
+					particles.rotation.z = 0;
+
+					scene.add( particles );
+
+				}
+
+var renderer = new THREE.WebGLRenderer();
+renderer.setPixelRatio(window.devicePixelRatio);
+renderer.setSize(window.innerWidth, window.innerHeight);
+container.appendChild(renderer.domElement);
+
+
+				controls = new THREE.OrbitControls( camera );
+
+
+var stats = new Stats();
+			var mouseX = 0, mouseY = 0;
+container.appendChild(stats.dom);
+
+				for ( i = 0; i < materials.length; i ++ ) {
+
+					color = parameters[i][0];
+
+					h = ( 360 * ( color[0] + 0 ) % 360 ) / 360;
+					materials[i].color.setHSL( h, color[1], color[2] );
+
+				}
+
+			function animate() {
+
+				requestAnimationFrame( animate );
+
+				render();
+				stats.update();
+
+			}
+
+			function render() {
+
+				var time = Date.now() * 0.00005;
+
+				// camera.position.x += ( mouseX - camera.position.x ) * 0.05;
+				// camera.position.y += ( - mouseY - camera.position.y ) * 0.05;
+
+				camera.lookAt( scene.position );
+
+				// for ( i = 0; i < scene.children.length; i ++ ) {
+
+				// 	var object = scene.children[ i ];
+
+				// 	if ( object instanceof THREE.Points ) {
+
+				// 		object.rotation.y = time * ( i < 4 ? i + 1 : - ( i + 1 ) );
+
+				// 	}
+
+				// }
+
+				// for ( i = 0; i < materials.length; i ++ ) {
+
+				// 	color = parameters[i][0];
+
+				// 	h = ( 360 * ( color[0] + time ) % 360 ) / 360;
+				// 	materials[i].color.setHSL( h, color[1], color[2] );
+
+				// }
+
+				renderer.render( scene, camera );
+
+			}
+animate()
+</script>
+
+</body>
